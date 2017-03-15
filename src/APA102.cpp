@@ -48,7 +48,9 @@ void APA102::display(const std::vector<Color>& colors) {
 }
 
 std::vector<char> APA102::colorToFrame(const Color& c) const {
-	double r = c.getRed(), g = c.getGreen(), b = c.getBlue();
+	double r = gammaTable[c.getRed()],
+		g = gammaTable[c.getGreen()],
+		b = gammaTable[c.getBlue()];
 
 	double largest = std::max(r, std::max(g, b));
 
