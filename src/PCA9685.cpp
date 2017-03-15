@@ -33,7 +33,7 @@ PCA9685::PCA9685(unsigned char _ledID)
 	if(ledsInUse == 0) {
 		if(!tableInitialized) {
 			for(unsigned int i = 0; i < gammaTable.size(); ++i) {
-				gammaTable[i] =(PWM_RESOLUTION) * std::pow((double)i / gammaTable.size(), 2.2)
+				gammaTable[i] =(PWM_RESOLUTION) * std::pow((double)i / gammaTable.size(), 2.4)
 					+ 0.5;
 			}
 			tableInitialized = true;
