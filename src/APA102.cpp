@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 #include <bcm2835.h>
 

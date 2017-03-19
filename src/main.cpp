@@ -1,6 +1,7 @@
 #include "LightNode/LightNode.hpp"
 #include "StripAnalog.hpp"
 #include "StripDigital.hpp"
+#include "StripMatrix.hpp"
 
 #include <string>
 #include <vector>
@@ -10,8 +11,9 @@
 #include <chrono>
 
 int main(int argc, char *argv[]) {
-	if(argc < 3 || argc > 4) {
-		std::cout << "Usage: " << argv[0] << " name analogCount [digitalCount]" << std::endl;
+	if(argc < 3 || argc == 5 || argc > 6) {
+		std::cout << "Usage: " << argv[0] << " name analogCount "
+			"[digitalCount [matrixWidth matrixHeight]]" << std::endl;
 
 		return 1;
 	}
@@ -26,19 +28,27 @@ int main(int argc, char *argv[]) {
 	
 	std::cout << "[Info] Starting LightNode with name '" << name << "' and "
 		<< analogCount << " analog strips";
-
-	if(argc == 4) {
+	
+	if(argc > 3) {
 		unsigned int digitalCount = std::stoi(argv[3]);
-		if(digitalCount == 0) {
-			std::cout << "[Error] Digital count must be greater than 0 (given "
-				<< std::to_string(digitalCount) << ")" << std::endl;
+		
+		if(argc == 6) {
+			if(digitalCount > 0) {
+				std::cout << "\n[Error] Simultaneous use of both digital strip "
+					"and matrix not supported" << std::endl;
+			}
 
-			return 1;
+			unsigned char matrixWidth = std::stoi(argv[4]),
+				matrixHeight = std::stoi(argv[5]);
+
+			strips.push_back(std::make_shared<StripMatrix>(matrixWidth, matrixHeight));
+			std::cout << " and 1 matrix (" << (int)matrixWidth << ", "
+				<< (int)matrixHeight << ")";
 		}
-
-		strips.push_back(std::make_shared<StripDigital>(digitalCount));
-
-		std::cout << " and 1 digital strip with " << digitalCount << " leds";
+		else {
+			strips.push_back(std::make_shared<StripDigital>(digitalCount));
+			std::cout << " and 1 digital strip with " << digitalCount << " leds";
+		}
 	}
 
 	std::cout << std::endl;
