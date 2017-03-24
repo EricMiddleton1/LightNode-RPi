@@ -43,19 +43,19 @@ int main(int argc, char *argv[]) {
 			strips.push_back(std::make_shared<Bulb>(argv[4+i], std::stoi(argv[5+i])));
 		}
 		
-		unsigned int argOffset = 4 + 2*bulbCount;
+		unsigned int argOffset = 3 + 2*bulbCount;
 		if(argc > argOffset) {
 
 			unsigned int digitalCount = std::stoi(argv[argOffset+1]);
 			
-			if(argc == argOffset+3) {
+			if(argc >= (argOffset + 4)) {
 				if(digitalCount > 0) {
 					std::cout << "\n[Error] Simultaneous use of both digital strip "
 						"and matrix not supported" << std::endl;
 				}
 
-				unsigned char matrixWidth = std::stoi(argv[4]),
-					matrixHeight = std::stoi(argv[5]);
+				unsigned char matrixWidth = std::stoi(argv[argOffset+2]),
+					matrixHeight = std::stoi(argv[argOffset+3]);
 
 				strips.push_back(std::make_shared<StripMatrix>(matrixWidth, matrixHeight));
 				std::cout << " and 1 matrix (" << (int)matrixWidth << ", "
