@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <numeric>
+#include <stdexcept>
 
 Bulb::Bulb(const std::string& _ipAddr, uint16_t _port)
 	:	LightStrip(LightStrip::Type::Analog, 1)
@@ -10,10 +11,24 @@ Bulb::Bulb(const std::string& _ipAddr, uint16_t _port)
 	,	socket(ioService)
 	,	asyncThread(std::bind(&Bulb::threadRoutine, this)) {
 	
-	socket.connect(endpoint);
+	try {
+		socket.connect(endpoint);
+	}
+	catch(...) {
+		std::cout << "[Bulb::Bulb] Exception thrown on connect" << std::endl;
+
+		ioWork.reset();
+		ioService.stop();
+		asyncThread.join();
+
+		throw std::runtime_error("Bulb::Bulb: Connect failed");
+	}
+
 }
 
 Bulb::~Bulb() {
+	std::cout << "Bulb::~Bulb" << std::endl;
+
 	ioWork.reset();
 	ioService.stop();
 
@@ -22,6 +37,8 @@ Bulb::~Bulb() {
 
 void Bulb::threadRoutine() {
 	ioService.run();
+
+	std::cout << "Bulb::threadRoutine: Exiting..." << std::endl;
 }
 
 void Bulb::update() {

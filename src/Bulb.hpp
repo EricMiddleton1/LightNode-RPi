@@ -14,7 +14,7 @@ class Bulb : public LightStrip
 {
 public:
 	Bulb(const std::string& ipAddr, uint16_t port);
-	~Bulb();
+	virtual ~Bulb();
 
 private:
 	virtual void update() override;
