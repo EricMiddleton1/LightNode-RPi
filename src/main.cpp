@@ -38,24 +38,27 @@ int main(int argc, char *argv[]) {
 			std::cout << "Error, wrong number of arguments" << std::endl;
 		}
 
+		std::cout << "and " << bulbCount << " Bulbs" << std::endl;
+
 		for(unsigned int i = 0; i < (2*bulbCount); i += 2) {
 			std::cout << "Creating bulb at " << argv[4+i] << ":" << argv[5+i] << std::endl;
 			strips.push_back(std::make_shared<Bulb>(argv[4+i], std::stoi(argv[5+i])));
 		}
 		
-		unsigned int argOffset = 3 + 2*bulbCount;
+		unsigned int argOffset = 4 + 2*bulbCount;
 		if(argc > argOffset) {
-
-			unsigned int digitalCount = std::stoi(argv[argOffset+1]);
+			unsigned int digitalCount = std::stoi(argv[argOffset]);
+			std::cout << " and " << digitalCount << " digital LEDs" << std::endl;
 			
-			if(argc >= (argOffset + 4)) {
+			if(argc > (argOffset+1)) {
 				if(digitalCount > 0) {
 					std::cout << "\n[Error] Simultaneous use of both digital strip "
 						"and matrix not supported" << std::endl;
+					return 1;
 				}
 
-				unsigned char matrixWidth = std::stoi(argv[argOffset+2]),
-					matrixHeight = std::stoi(argv[argOffset+3]);
+				unsigned char matrixWidth = std::stoi(argv[argOffset+1]),
+					matrixHeight = std::stoi(argv[argOffset+2]);
 
 				strips.push_back(std::make_shared<StripMatrix>(matrixWidth, matrixHeight));
 				std::cout << " and 1 matrix (" << (int)matrixWidth << ", "
