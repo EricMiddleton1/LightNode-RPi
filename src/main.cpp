@@ -3,6 +3,7 @@
 #include "StripDigital.hpp"
 #include "StripMatrix.hpp"
 #include "Bulb.hpp"
+#include "LB130.hpp"
 
 #include <string>
 #include <vector>
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 		for(unsigned int i = 0; i < (2*bulbCount); i += 2) {
 			std::cout << "Creating bulb at " << argv[4+i] << ":" << argv[5+i] << std::endl;
-			strips.push_back(std::make_shared<Bulb>(argv[4+i], std::stoi(argv[5+i])));
+			strips.push_back(std::make_shared<LB130>(argv[4+i], std::stoi(argv[5+i])));
 		}
 		
 		unsigned int argOffset = 3 + 2*bulbCount;
