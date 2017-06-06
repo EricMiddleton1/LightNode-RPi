@@ -46,9 +46,9 @@ void LB130::update() {
 
 		std::string command = "{\"smartlife.iot.smartbulb.lightingservice\""
 			":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":" + 
-			std::to_string((int)(value > 5)) + ",\"color_temp\":0,"
+			std::to_string((int)(value > 0)) + ",\"color_temp\":0,"
 			"\"hue\":" + std::to_string(hue) + ",\"saturation\":" + std::to_string(sat) +
-			",\"brightness\":" + std::to_string(value) + ",\"transition_period\":10}}}";
+			",\"brightness\":" + std::to_string(value) + ",\"transition_period\":20}}}";
 		
 		//std::cout << command << std::endl;
 		
