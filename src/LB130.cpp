@@ -40,9 +40,9 @@ void LB130::update() {
 		
 		Color c(255.*r + 0.5, 255.*g + 0.5, 255.*b + 0.5);
 
-		float hue = c.getHue();
-		float sat = 100.f*c.getHSVSaturation();
-		float value = 100.f*c.getValue();
+		int hue = c.getHue();
+		int sat = 100.f*c.getHSVSaturation();
+		int value = 100.f*c.getValue();
 
 		std::string command = "{\"smartlife.iot.smartbulb.lightingservice\""
 			":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":" + 
