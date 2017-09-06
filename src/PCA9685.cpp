@@ -1,5 +1,6 @@
 #include "PCA9685.hpp"
 
+#include <vector>
 #include <stdexcept>
 #include <string>
 #include <iostream>
