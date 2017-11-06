@@ -1,0 +1,16 @@
+name: "LightNode"
+
+lights:
+  - name: "Left Bulb"
+    driver: "LB130"
+    ip: "192.168.1.200"
+    port: 9999
+  
+  - name: "Left Bulb"
+    driver: "LB130"
+    ip: "192.168.1.200"
+    port: 9999
+  
+  - name: "Matrix"
+    driver: "APA192"
+    size: 768

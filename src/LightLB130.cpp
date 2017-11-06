@@ -1,39 +1,31 @@
-#include "LB130.hpp"
+#include "LightLB130.hpp"
 
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
 
-LB130::LB130(const std::string& _ipAddr, uint16_t _port)
-	:	LightStrip(LightStrip::Type::Analog, 1)
+LightLB130::LightLB130(const std::string& _name, const std::string& _ipAddr, uint16_t _port)
+	:	Light(_name, 1)
 	,	ioWork(std::make_unique<boost::asio::io_service::work>(ioService))
 	,	endpoint(boost::asio::ip::address::from_string(_ipAddr), _port)
 	,	socket(ioService, boost::asio::ip::udp::v4())
-	,	asyncThread(std::bind(&LB130::threadRoutine, this)) {
+	,	asyncThread(std::bind(&LightLB130::threadRoutine, this)) {
 }
 
-LB130::~LB130() {
-	std::cout << "LB130::~LB130" << std::endl;
-
+LightLB130::~LightLB130() {
 	ioWork.reset();
 	ioService.stop();
 
 	asyncThread.join();
 }
 
-void LB130::threadRoutine() {
+void LightLB130::threadRoutine() {
 	ioService.run();
 
-	std::cout << "LB130::threadRoutine: Exiting..." << std::endl;
+	std::cout << "LightLB130::threadRoutine: Exiting..." << std::endl;
 }
 
-void LB130::update() {
-	static bool tick = false;
-
-	tick = !tick;
-
-	//if(tick) {
-
+void LightLB130::update() {
 		double r = std::pow(leds[0].getRed()/255., 2.2),
 			g = std::pow(leds[0].getGreen()/255., 2.2),
 			b = std::pow(leds[0].getBlue()/255., 2.2);
@@ -50,13 +42,10 @@ void LB130::update() {
 			"\"hue\":" + std::to_string(hue) + ",\"saturation\":" + std::to_string(sat) +
 			",\"brightness\":" + std::to_string(value) + ",\"transition_period\":20}}}";
 		
-		//std::cout << command << std::endl;
-		
 		socket.send_to(boost::asio::buffer(encrypt(command)), endpoint);
-	//}
 }
 
-std::vector<uint8_t> LB130::encrypt(const std::string& command) {
+std::vector<uint8_t> LightLB130::encrypt(const std::string& command) {
 	std::vector<uint8_t> data(command.begin(), command.end());
 
 	uint8_t key = 0xAB;

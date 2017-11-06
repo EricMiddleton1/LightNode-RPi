@@ -1,9 +1,7 @@
 #include "LightNode/LightNode.hpp"
-#include "StripAnalog.hpp"
-#include "StripDigital.hpp"
-#include "StripMatrix.hpp"
-#include "Bulb.hpp"
-#include "LB130.hpp"
+#include "LightPCA9685.hpp"
+#include "LightAPA102.hpp"
+#include "LightLB130.hpp"
 
 #include <string>
 #include <vector>
@@ -13,68 +11,47 @@
 #include <chrono>
 
 int main(int argc, char *argv[]) {
-	if(argc < 3) {
-		std::cout << "Usage: " << argv[0] << " name analogCount "
-			"[bulbCount bulb1IP bulb1Port ... [digitalCount [matrixWidth matrixHeight]]]"
-			<< std::endl;
+	std::vector<std::shared_ptr<Light>> lights;
+	
+	std::string name("LightNode-Matrix");
 
+/*
+	YAML::Node config = YAML::LoadFile("config.yaml");
+
+	auto name = std::s
+
+	auto nodeLights = config["lights"];
+
+	if(!nodeLights) {
+		std::cerr << "[Error] No lights defined in config file" << std::endl;
 		return 1;
 	}
 
-	std::string name(argv[1]);
-	unsigned int analogCount = std::stoi(argv[2]);
+	for(const auto& nodeLight : nodeLights) {
+		auto name = nodeLight["name"].as<std::string>();
+		auto driver = nodeLight["driver"].as<std::string>();
 
-	std::vector<std::shared_ptr<LightStrip>> strips;
-	for(unsigned int i = 0; i < analogCount; ++i) {
-		strips.push_back(std::make_shared<StripAnalog>(i));
-	}
-	
-	std::cout << "[Info] Starting LightNode with name '" << name << "' and "
-		<< analogCount << " analog strips" << std::endl;;
-	
-	if(argc > 3) {
-		unsigned int bulbCount = std::stoi(argv[3]);
+		std::cout << "Creating light '" << name << "' with driver '" << driver << "'"
+			<< std::endl;
 
-		if(argc < (4 + 2*bulbCount)) {
-			std::cout << "Error, wrong number of arguments" << std::endl;
+		if(driver == "APA102") {
+			lights.emplace_back(std::make_shared<LightAPA102>(name,
+				nodeLight["size"].as<int>()));
 		}
-
-		std::cout << "and " << bulbCount << " Bulbs" << std::endl;
-
-		for(unsigned int i = 0; i < (2*bulbCount); i += 2) {
-			std::cout << "Creating bulb at " << argv[4+i] << ":" << argv[5+i] << std::endl;
-			strips.push_back(std::make_shared<LB130>(argv[4+i], std::stoi(argv[5+i])));
+		else if(driver == "LB130") {
+			lights.emplace_back(std::make_shared<LightLB130>(name,
+				nodeLight["ip"].as<std::string>(), nodeLight["port"].as<int>()));
 		}
-		
-		unsigned int argOffset = 4 + 2*bulbCount;
-		if(argc > argOffset) {
-			unsigned int digitalCount = std::stoi(argv[argOffset]);
-			std::cout << " and " << digitalCount << " digital LEDs" << std::endl;
-			
-			if(argc > (argOffset+1)) {
-				if(digitalCount > 0) {
-					std::cout << "\n[Error] Simultaneous use of both digital strip "
-						"and matrix not supported" << std::endl;
-					return 1;
-				}
-
-				unsigned char matrixWidth = std::stoi(argv[argOffset+1]),
-					matrixHeight = std::stoi(argv[argOffset+2]);
-
-				strips.push_back(std::make_shared<StripMatrix>(matrixWidth, matrixHeight));
-				std::cout << " and 1 matrix (" << (int)matrixWidth << ", "
-					<< (int)matrixHeight << ")";
-			}
-			else {
-				strips.push_back(std::make_shared<StripDigital>(digitalCount));
-				std::cout << " and 1 digital strip with " << digitalCount << " leds";
-			}
+		else if(driver == "PCA9685") {
+			lights.emplace_back(std::make_shared<LightPCA9685>(name,
+				nodeLight["channel"].as<int>()));
+		}
+		else {
+			std::cerr << "[Error] Invalid driver" << std::endl;
 		}
 	}
-
-	std::cout << std::endl;
-	
-	LightNode node(strips, name);
+*/
+	LightNode node(lights, name);
 
 	while(1) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));

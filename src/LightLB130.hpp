@@ -7,14 +7,14 @@
 #include <string>
 #include <cstdint>
 
-#include "LightNode/LightStrip.hpp"
+#include "LightNode/Light.hpp"
 
 
-class LB130 : public LightStrip
+class LightLB130 : public Light
 {
 public:
-	LB130(const std::string& ipAddr, uint16_t port);
-	virtual ~LB130();
+	LightLB130(const std::string& name, const std::string& ipAddr, uint16_t port);
+	virtual ~LightLB130();
 
 private:
 	virtual void update() override;
