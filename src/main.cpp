@@ -10,15 +10,14 @@
 #include <thread>
 #include <chrono>
 
+#include <yaml-cpp/yaml.h>
+
 int main(int argc, char *argv[]) {
 	std::vector<std::shared_ptr<Light>> lights;
 	
-	std::string name("LightNode-Matrix");
-
-/*
 	YAML::Node config = YAML::LoadFile("config.yaml");
 
-	auto name = std::s
+	auto name = config["name"].as<std::string>();
 
 	auto nodeLights = config["lights"];
 
@@ -47,10 +46,10 @@ int main(int argc, char *argv[]) {
 				nodeLight["channel"].as<int>()));
 		}
 		else {
-			std::cerr << "[Error] Invalid driver" << std::endl;
+			std::cerr << "[Error] Invalid driver: " << driver << std::endl;
 		}
 	}
-*/
+	
 	LightNode node(lights, name);
 
 	while(1) {

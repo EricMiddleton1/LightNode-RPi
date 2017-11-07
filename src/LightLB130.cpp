@@ -26,23 +26,26 @@ void LightLB130::threadRoutine() {
 }
 
 void LightLB130::update() {
-		double r = std::pow(leds[0].getRed()/255., 2.2),
-			g = std::pow(leds[0].getGreen()/255., 2.2),
-			b = std::pow(leds[0].getBlue()/255., 2.2);
-		
-		Color c(255.*r + 0.5, 255.*g + 0.5, 255.*b + 0.5);
+	auto ledColor = leds[0].getColor();
 
-		int hue = c.getHue();
-		int sat = 100.f*c.getHSVSaturation();
-		int value = 100.f*c.getValue();
+	double r = std::pow(ledColor.getRed()/255., 2.2),
+		g = std::pow(ledColor.getGreen()/255., 2.2),
+		b = std::pow(ledColor.getBlue()/255., 2.2);
+									
+	Color c(255.*r + 0.5, 255.*g + 0.5, 255.*b + 0.5);
 
-		std::string command = "{\"smartlife.iot.smartbulb.lightingservice\""
-			":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":" + 
-			std::to_string((int)(value > 0)) + ",\"color_temp\":0,"
-			"\"hue\":" + std::to_string(hue) + ",\"saturation\":" + std::to_string(sat) +
-			",\"brightness\":" + std::to_string(value) + ",\"transition_period\":20}}}";
-		
-		socket.send_to(boost::asio::buffer(encrypt(command)), endpoint);
+	auto hue = c.getHue(), sat = c.getSat(), val = c.getVal();
+
+	std::string command = "{\"smartlife.iot.smartbulb.lightingservice\""
+		":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":" + 
+		std::to_string(leds[0].isOn() && (val > 0)) + ",\"color_temp\":0,"
+		"\"hue\":" + std::to_string((int)(360.f*hue/256.f)) + ",\"saturation\":" +
+		std::to_string((int)(100.f*sat/256.f)) +
+		",\"brightness\":" + std::to_string((int)(100.f*val/256.f)) + ",\"transition_period\":20}}}";
+	
+	std::cout << endpoint.address().to_string() << ":\n" << command << "\n" << std::endl;
+	
+	socket.send_to(boost::asio::buffer(encrypt(command)), endpoint);
 }
 
 std::vector<uint8_t> LightLB130::encrypt(const std::string& command) {

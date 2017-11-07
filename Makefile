@@ -18,7 +18,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)
 # General linker settings
-LINK_FLAGS = -lboost_system -lpthread -lbcm2835
+LINK_FLAGS = -lboost_system -lpthread -lbcm2835 -lyaml-cpp
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings

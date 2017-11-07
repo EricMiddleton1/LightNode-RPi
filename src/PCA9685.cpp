@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <cmath>
+
 #include <bcm2835.h>
 
 

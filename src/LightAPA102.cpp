@@ -9,5 +9,12 @@ LightAPA102::LightAPA102(const std::string& _name, size_t _ledCount)
 }
 
 void LightAPA102::update() {
-	ledDriver.display(leds);
+	std::vector<Color> colors;
+	colors.reserve(leds.size());
+
+	for(const auto& led : leds) {
+		colors.push_back(led.getColor());
+	}
+
+	ledDriver.display(colors);
 }
