@@ -4,8 +4,9 @@
 #include <numeric>
 #include <stdexcept>
 
-LightLB130::LightLB130(const std::string& _name, const std::string& _ipAddr, uint16_t _port)
-	:	Light(_name, 1)
+LightLB130::LightLB130(boost::asio::io_service& ioService, const std::string& _name,
+	const std::string& _ipAddr, uint16_t _port)
+	:	Light(ioService, _name, 1)
 	,	ioWork(std::make_unique<boost::asio::io_service::work>(ioService))
 	,	endpoint(boost::asio::ip::address::from_string(_ipAddr), _port)
 	,	socket(ioService, boost::asio::ip::udp::v4())
