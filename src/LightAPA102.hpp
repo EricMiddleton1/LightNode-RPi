@@ -9,7 +9,7 @@
 class LightAPA102 : public Light
 {
 public:
-	LightAPA102(boost::asio::io_service& ioService, const std::string& name, size_t ledCount);
+	LightAPA102(const std::string& name, size_t ledCount);
 
 private:
 	virtual void update() override;

@@ -13,8 +13,7 @@
 class LightLB130 : public Light
 {
 public:
-	LightLB130(boost::asio::io_service& ioService, const std::string& name,
-		const std::string& ipAddr, uint16_t port);
+	LightLB130(const std::string& name, const std::string& ipAddr, uint16_t port);
 	virtual ~LightLB130();
 
 private:
