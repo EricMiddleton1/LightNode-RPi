@@ -16,6 +16,8 @@
 
 int main(int argc, char *argv[]) {
 	std::vector<std::shared_ptr<Light>> lights;
+	boost::asio::io_service ioService;
+	boost::asio::io_service::work ioWork(ioService);
 	
 	YAML::Node config = YAML::LoadFile("config.yaml");
 
@@ -36,15 +38,15 @@ int main(int argc, char *argv[]) {
 			<< std::endl;
 
 		if(driver == "APA102") {
-			lights.emplace_back(std::make_shared<LightAPA102>(name,
+			lights.emplace_back(std::make_shared<LightAPA102>(ioService, name,
 				nodeLight["size"].as<int>()));
 		}
 		else if(driver == "LB130") {
-			lights.emplace_back(std::make_shared<LightLB130>(name,
+			lights.emplace_back(std::make_shared<LightLB130>(ioService, name,
 				nodeLight["ip"].as<std::string>(), nodeLight["port"].as<int>()));
 		}
 		else if(driver == "PCA9685") {
-			lights.emplace_back(std::make_shared<LightPCA9685>(name,
+			lights.emplace_back(std::make_shared<LightPCA9685>(ioService, name,
 				nodeLight["channel"].as<int>()));
 		}
 		else {
@@ -54,9 +56,7 @@ int main(int argc, char *argv[]) {
 	
 	LightNode node(lights, name);
 
-	while(true) {
-		std::this_thread::sleep_for(std::chrono::seconds(10));
-	}
+	ioService.run();
 
 	return 0;
 }

@@ -28,17 +28,14 @@ private:
 	static const unsigned char REGISTER_LED_START = 0x06;
 	static const unsigned char PRESCALAR = 0x03;
 	static const unsigned int PWM_RESOLUTION = 4096;
-
 	
-	static void update();
+	void update();
 
-
+	Color c;
+	
 	static unsigned char ledsInUse;
-	static unsigned char ledsSet;
-	static std::array<Color, LED_COUNT> leds;
 	static std::array<uint16_t, 256> gammaTable;
 	static bool tableInitialized;
-	static std::mutex mutex;
 	
 	BCM2835Lock bcm2835Lock;
 

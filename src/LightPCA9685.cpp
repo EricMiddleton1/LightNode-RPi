@@ -1,9 +1,9 @@
 #include "LightPCA9685.hpp"
 
 
-LightPCA9685::LightPCA9685(const std::string& _name,
+LightPCA9685::LightPCA9685(boost::asio::io_service& ioService, const std::string& _name,
 	unsigned int _ledID)
-	:	Light(_name, 1)
+	:	Light(ioService, _name, 1)
 	,	ledDriver(_ledID) {
 }
 

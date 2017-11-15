@@ -10,15 +10,11 @@
 
 
 unsigned char PCA9685::ledsInUse = 0;
-unsigned char PCA9685::ledsSet = 0;
-std::array<Color, PCA9685::LED_COUNT> PCA9685::leds;
 std::array<uint16_t, 256> PCA9685::gammaTable;
 bool PCA9685::tableInitialized = false;
-std::mutex PCA9685::mutex;
 
 PCA9685::PCA9685(unsigned char _ledID)
 	:	ledID{_ledID}	{
-	std::unique_lock<std::mutex> lock(mutex);
 
 	if(ledID >= LED_COUNT) {
 		throw std::runtime_error("PCA9685::PCA9685: ledID must be in range "
@@ -48,6 +44,7 @@ PCA9685::PCA9685(unsigned char _ledID)
 		}
 
 		bcm2835_i2c_setSlaveAddress(I2C_ADDR);
+		bcm2835_i2c_setClockDivider(BCM2835_I2C_CLOCK_DIVIDER_150);
 
 		std::vector<char> buffer;
 
@@ -72,12 +69,9 @@ PCA9685::PCA9685(unsigned char _ledID)
 }
 
 PCA9685::~PCA9685() {
-	std::unique_lock<std::mutex> lock(mutex);
-	
 	unsigned char mask = (1 << ledID);
 
 	ledsInUse &= ~mask;
-	ledsSet &= ~mask;
 
 	if(ledsInUse == 0) {
 		//Last one out, close i2c driver
@@ -85,45 +79,39 @@ PCA9685::~PCA9685() {
 	}
 }
 
-void PCA9685::setColor(const Color& c) {
-	std::unique_lock<std::mutex> lock(mutex);
+void PCA9685::setColor(const Color& _c) {
+	c = _c;
 
-	leds[ledID] = c;
-	ledsSet |= (1 << ledID);
-
-	if(ledsSet == ledsInUse) {
-		//All LEDs updated, send the updates to the PCA9685
-		update();
-
-		ledsSet = 0;
-	}
+	update();
 }
 
 Color PCA9685::getColor() const {
-	std::unique_lock<std::mutex> lock(mutex);
-
-	return leds[ledID];
+	return c;
 }
 
 void PCA9685::update() {
-	//This function should only be called when the mutex is held
+	std::array<char, 1+3*4> buffer;
 
-	std::vector<char> buffer;
+	buffer[0] = REGISTER_LED_START + 3*4*ledID;
+	uint16_t gammaVal;
 
-	buffer.push_back(REGISTER_LED_START);
-
-	for(auto& color : leds) {
-		std::vector<char> values({color.getRed(), color.getGreen(),
-			color.getBlue()});
-
-		for(auto& value : values) {
-			uint16_t gammaVal = gammaTable[value];
-			buffer.push_back(0);
-			buffer.push_back(0);
-			buffer.push_back(gammaVal & 0xFF);
-			buffer.push_back(gammaVal >> 8);
-		}
-	}
+	gammaVal = gammaTable[c.getRed()];
+	buffer[1] = 0;
+	buffer[2] = 0;
+	buffer[3] = gammaVal & 0xFF;
+	buffer[4] = gammaVal >> 8;
+	
+	gammaVal = gammaTable[c.getGreen()];
+	buffer[5] = 0;
+	buffer[6] = 0;
+	buffer[7] = gammaVal & 0xFF;
+	buffer[8] = gammaVal >> 8;
+	
+	gammaVal = gammaTable[c.getBlue()];
+	buffer[9] = 0;
+	buffer[10] = 0;
+	buffer[11] = gammaVal & 0xFF;
+	buffer[12] = gammaVal >> 8;
 
 	if(bcm2835_i2c_write(buffer.data(), buffer.size()) != BCM2835_I2C_REASON_OK) {
 		std::cout << "[Error] StripAnalog::update: Error sending I2C data"

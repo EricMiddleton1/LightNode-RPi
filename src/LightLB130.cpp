@@ -4,9 +4,9 @@
 #include <numeric>
 #include <stdexcept>
 
-LightLB130::LightLB130(const std::string& _name,
+LightLB130::LightLB130(boost::asio::io_service& ioService, const std::string& _name,
 	const std::string& _ipAddr, uint16_t _port)
-	:	Light(_name, 1)
+	:	Light(ioService, _name, 1)
 	,	ioWork(std::make_unique<boost::asio::io_service::work>(ioService))
 	,	endpoint(boost::asio::ip::address::from_string(_ipAddr), _port)
 	,	socket(ioService, boost::asio::ip::udp::v4())
@@ -39,7 +39,7 @@ void LightLB130::update() {
 
 	std::string command = "{\"smartlife.iot.smartbulb.lightingservice\""
 		":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":" + 
-		std::to_string(leds[0].isOn() && (val > 0)) + ",\"color_temp\":0,"
+		std::to_string(leds[0].isTargetOn() && (val > 0)) + ",\"color_temp\":0,"
 		"\"hue\":" + std::to_string((int)(360.f*hue/256.f)) + ",\"saturation\":" +
 		std::to_string((int)(100.f*sat/256.f)) + ",\"brightness\":" +
 		std::to_string((int)(100.f*val/256.f)) + ",\"transition_period\":20}}}";
