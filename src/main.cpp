@@ -2,6 +2,7 @@
 #include "LightPCA9685.hpp"
 #include "LightAPA102.hpp"
 #include "LightLB130.hpp"
+#include "MatrixAPA102.hpp"
 
 #include <string>
 #include <vector>
@@ -40,6 +41,10 @@ int main(int argc, char *argv[]) {
 		if(driver == "APA102") {
 			lights.emplace_back(std::make_shared<LightAPA102>(ioService, name,
 				nodeLight["size"].as<int>()));
+		}
+		else if(driver == "Matrix") {
+			lights.emplace_back(std::make_shared<MatrixAPA102>(ioService, name,
+				nodeLight["width"].as<int>(), nodeLight["height"].as<int>()));
 		}
 		else if(driver == "LB130") {
 			lights.emplace_back(std::make_shared<LightLB130>(ioService, name,
